@@ -11,6 +11,8 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - oraclejdk10
+  - openjdk10
+  - openjdk11
   
 # compile and run the test suite
 # we manually set PRISM_JAVA to the java on the PATH as the python invocation of prism-auto fiddles with the PATH variable...  
@@ -27,7 +29,6 @@ script: >
 notifications:
   email:
     recipients:
-      - d.a.parker@cs.bham.ac.uk
       - klein@tcs.inf.tu-dresden.de
     on_success: change
     on_failure: always
