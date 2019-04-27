@@ -6,7 +6,7 @@ dist: trusty
 sudo: required
 language: java
 
-# we test for JDK8 and JDK9
+# we test for JDK 8,9,10,11
 jdk:
   - oraclejdk8
   - oraclejdk9

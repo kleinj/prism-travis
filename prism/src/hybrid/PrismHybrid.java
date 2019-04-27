@@ -79,10 +79,7 @@ public class PrismHybrid
 	{
 		// currently, the hybrid engine internally uses int (signed 32bit) index values
 		// so, if the number of states is larger than Integer.MAX_VALUE, there is a problem
-		long n = odd.getEOff() + odd.getTOff();
-		if (n >= Integer.MAX_VALUE) {
-			throw new PrismNotSupportedException("The hybrid engine can currently only handle up to " + Integer.MAX_VALUE + " reachable states, model has " + n + " states");
-		}
+		ODDUtils.checkInt(odd, "Currently, the hybrid engine cannot handle models");
 	}
 
 	//------------------------------------------------------------------------------
@@ -204,6 +201,8 @@ public class PrismHybrid
 	private static native long PH_ProbUntilInterval(long trans, long odd, long rv, int nrv, long cv, int ncv, long yes, long maybe, int flags);
 	public static DoubleVector ProbUntilInterval(JDDNode trans, ODDNode odd, JDDVars rows, JDDVars cols, JDDNode yes, JDDNode maybe, int flags) throws PrismException
 	{
+		checkNumStates(odd);
+
 		long ptr = PH_ProbUntilInterval(trans.ptr(), odd.ptr(), rows.array(), rows.n(), cols.array(), cols.n(), yes.ptr(), maybe.ptr(), flags);
 		if (ptr == 0) throw generateExceptionForError();
 		return new DoubleVector(ptr, (int)(odd.getEOff() + odd.getTOff()));
@@ -246,6 +245,8 @@ public class PrismHybrid
 	private static native long PH_ProbReachRewardInterval(long trans, long sr, long trr, long odd, long rv, int nrv, long cv, int ncv, long goal, long inf, long maybe, long lower, long upper, int flags);
 	public static DoubleVector ProbReachRewardInterval(JDDNode trans, JDDNode sr, JDDNode trr, ODDNode odd, JDDVars rows, JDDVars cols, JDDNode goal, JDDNode inf, JDDNode maybe, JDDNode lower, JDDNode upper, int flags) throws PrismException
 	{
+		checkNumStates(odd);
+
 		long ptr = PH_ProbReachRewardInterval(trans.ptr(), sr.ptr(), trr.ptr(), odd.ptr(), rows.array(), rows.n(), cols.array(), cols.n(), goal.ptr(), inf.ptr(), maybe.ptr(), lower.ptr(), upper.ptr(), flags);
 		if (ptr == 0) throw generateExceptionForError();
 		return new DoubleVector(ptr, (int)(odd.getEOff() + odd.getTOff()));

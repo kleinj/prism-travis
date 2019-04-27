@@ -33,6 +33,7 @@ import jdd.JDD;
 import jdd.JDDNode;
 import jdd.JDDVars;
 import odd.ODDNode;
+import odd.ODDUtils;
 import prism.NativeIntArray;
 import prism.OpsAndBoundsList;
 import prism.PrismException;
@@ -89,10 +90,7 @@ public class PrismSparse
 	{
 		// currently, the sparse engine internally uses int (signed 32bit) index values
 		// so, if the number of states is larger than Integer.MAX_VALUE, there is a problem
-		long n = odd.getEOff() + odd.getTOff();
-		if (n >= Integer.MAX_VALUE) {
-			throw new PrismNotSupportedException("The sparse engine can currently only handle up to " + Integer.MAX_VALUE + " reachable states, model has " + n + " states");
-		}
+		ODDUtils.checkInt(odd, "Currently, the sparse engine cannot handle models");
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -204,6 +202,8 @@ public class PrismSparse
 	private static native long PS_ProbUntilInterval(long trans, long odd, long rv, int nrv, long cv, int ncv, long yes, long maybe, int flags);
 	public static DoubleVector ProbUntilInterval(JDDNode trans, ODDNode odd, JDDVars rows, JDDVars cols, JDDNode yes, JDDNode maybe, int flags) throws PrismException
 	{
+		checkNumStates(odd);
+
 		long ptr = PS_ProbUntilInterval(trans.ptr(), odd.ptr(), rows.array(), rows.n(), cols.array(), cols.n(), yes.ptr(), maybe.ptr(), flags);
 		if (ptr == 0) throw generateExceptionForError();
 		return new DoubleVector(ptr, (int)(odd.getEOff() + odd.getTOff()));
@@ -246,6 +246,8 @@ public class PrismSparse
 	private static native long PS_ProbReachRewardInterval(long trans, long sr, long trr, long odd, long rv, int nrv, long cv, int ncv, long goal, long inf, long maybe, long lower, long upper, int flags);
 	public static DoubleVector ProbReachRewardInterval(JDDNode trans, JDDNode sr, JDDNode trr, ODDNode odd, JDDVars rows, JDDVars cols, JDDNode goal, JDDNode inf, JDDNode maybe, JDDNode lower, JDDNode upper, int flags) throws PrismException
 	{
+		checkNumStates(odd);
+
 		long ptr = PS_ProbReachRewardInterval(trans.ptr(), sr.ptr(), trr.ptr(), odd.ptr(), rows.array(), rows.n(), cols.array(), cols.n(), goal.ptr(), inf.ptr(), maybe.ptr(), lower.ptr(), upper.ptr(), flags);
 		if (ptr == 0) throw generateExceptionForError();
 		return new DoubleVector(ptr, (int)(odd.getEOff() + odd.getTOff()));
@@ -292,6 +294,8 @@ public class PrismSparse
 	private static native long PS_NondetUntilInterval(long trans, long trans_actions, List<String> synchs, long odd, long rv, int nrv, long cv, int ncv, long ndv, int nndv, long yes, long maybe, boolean minmax, long strat, int flags);
 	public static DoubleVector NondetUntilInterval(JDDNode trans, JDDNode transActions, List<String> synchs, ODDNode odd, JDDVars rows, JDDVars cols, JDDVars nondet, JDDNode yes, JDDNode maybe, boolean minmax, IntegerVector strat, int flags) throws PrismException
 	{
+		checkNumStates(odd);
+
 		long ptr = PS_NondetUntilInterval(trans.ptr(), (transActions == null) ? 0 : transActions.ptr(), synchs, odd.ptr(), rows.array(), rows.n(), cols.array(), cols.n(), nondet.array(), nondet.n(), yes.ptr(), maybe.ptr(), minmax, (strat == null) ? 0 : strat.getPtr(), flags);
 		if (ptr == 0) throw generateExceptionForError();
 		return new DoubleVector(ptr, (int)(odd.getEOff() + odd.getTOff()));
@@ -334,6 +338,8 @@ public class PrismSparse
 	private static native long PS_NondetReachRewardInterval(long trans, long trans_actions, List<String> synchs, long sr, long trr, long odd, long rv, int nrv, long cv, int ncv, long ndv, int nndv, long goal, long inf, long maybe, long lower, long upper, boolean minmax, int flags);
 	public static DoubleVector NondetReachRewardInterval(JDDNode trans, JDDNode transActions, List<String> synchs, JDDNode sr, JDDNode trr, ODDNode odd, JDDVars rows, JDDVars cols, JDDVars nondet, JDDNode goal, JDDNode inf, JDDNode maybe, JDDNode lower, JDDNode upper, boolean minmax, int flags) throws PrismException
 	{
+		checkNumStates(odd);
+
 		long ptr = PS_NondetReachRewardInterval(trans.ptr(), (transActions == null) ? 0 : transActions.ptr(), synchs, sr.ptr(), trr.ptr(), odd.ptr(), rows.array(), rows.n(), cols.array(), cols.n(), nondet.array(), nondet.n(), goal.ptr(), inf.ptr(), maybe.ptr(), lower.ptr(), upper.ptr(), minmax, flags);
 		if (ptr == 0) throw generateExceptionForError();
 		return new DoubleVector(ptr, (int)(odd.getEOff() + odd.getTOff()));
